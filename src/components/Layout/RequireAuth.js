@@ -8,6 +8,7 @@ const RequireAuth = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const didTimeout = useSelector((state) => state.auth.timeout);
+  const didLogout = useSelector((state) => state.auth.didLogout);
   const token = useSelector((state) => state.auth.token);
   const sessionExpirationTime = useSelector(
     (state) => state.auth.sessionExpiresAt
@@ -16,7 +17,7 @@ const RequireAuth = () => {
   const currentTime = Date.now();
 
   useEffect(() => {
-    if (!token && didTimeout === false) {
+    if (didLogout === false && !token && didTimeout === false) {
       dispatch(logout());
 
       notification.error({
@@ -45,8 +46,18 @@ const RequireAuth = () => {
     return;
   }, [dispatch, currentTime, sessionExpirationTime, navigate]);
 
+  useEffect(() => {
+    if (didLogout) {
+      notification.success({
+        message: "Hope to see you again soon:(",
+        duration: 2,
+        placement: "topLeft",
+      });
+    }
+  }, [didLogout]);
+
   if (!token) {
-    return;
+    return navigate("/login");
   }
 
   return <Outlet />;

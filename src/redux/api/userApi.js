@@ -6,11 +6,11 @@ export const userApi = createApi({
     baseUrl: `${process.env.REACT_APP_SERVER_URL}/user`,
   }),
   endpoints: (builder) => ({
-    fetchUser: builder.query({ query: (userId) => `/${userId}` }),
-    fetchUserPosts: builder.query({
-      query: (userId) => `/${userId}/posts`,
+    fetchUser: builder.query({
+      query: (userId) => `/${userId}`,
+      providesTags: ["Likes", "Reposts"],
     }),
   }),
 });
 
-export const { useFetchUserQuery, useFetchUserPostsQuery } = userApi;
+export const { useFetchUserQuery } = userApi;

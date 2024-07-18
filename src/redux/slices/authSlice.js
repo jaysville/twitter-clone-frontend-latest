@@ -6,6 +6,7 @@ const initialState = {
   sessionExpiresAt: null,
   error: null,
   timeout: false,
+  didLogOut: false,
 };
 
 const authSlice = createSlice({
@@ -35,6 +36,7 @@ const authSlice = createSlice({
       state.user = null;
       state.timeout = false;
       state.sessionExpiresAt = null;
+      state.didLogOut = true;
     },
   },
 });

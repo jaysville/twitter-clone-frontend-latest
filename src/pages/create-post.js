@@ -1,9 +1,11 @@
 import styled from "styled-components";
-import { message, notification } from "antd";
+import { message, notification, Spin } from "antd";
 
 import { useEffect, useState } from "react";
 import { useCreatePostMutation } from "../redux/api/postApi";
 import { useNavigate } from "react-router-dom";
+import openSocket from "socket.io-client";
+import { PostUploadButton } from "../components/UI/Buttons";
 const CreatePost = () => {
   const [post, setPosts] = useState("");
   const [createPost, { isLoading, error, data, isError, isSuccess }] =
@@ -34,7 +36,6 @@ const CreatePost = () => {
       navigate("/");
     }
     if (isError) {
-      console.log(error, "error here");
       notification.error({
         message:
           error.status === 500 ? "Something went wrong." : error.data.error,
@@ -50,7 +51,9 @@ const CreatePost = () => {
           setPosts(e.target.value);
         }}
       />
-      <button onClick={submitPost}>Post</button>
+      <PostUploadButton onClick={submitPost} disabled={isLoading}>
+        {isLoading ? <Spin /> : " Post"}
+      </PostUploadButton>
     </Style>
   );
 };

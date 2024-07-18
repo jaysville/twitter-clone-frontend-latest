@@ -22,7 +22,7 @@ export const AuthButton = styled.button`
   }
 `;
 
-export const PostBtn = (props) => {
+export const PostPageBtn = (props) => {
   const Style = styled.button`
     border-radius: 10px;
     color: aliceblue;
@@ -40,3 +40,16 @@ export const PostBtn = (props) => {
     </Style>
   );
 };
+
+export const PostUploadButton = styled.button`
+  color: aliceblue;
+  width: 100px;
+  height: 50px;
+  border: none;
+  border-radius: 10px;
+  background-color: ${(props) => (props.disabled ? "grey" : "cornflowerblue")};
+  @media (max-width: 500px) {
+    transform: scale(0.8);
+    margin-top: 50px;
+  }
+`;

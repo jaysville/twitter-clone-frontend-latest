@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { Outlet, Link, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useFetchUserQuery } from "../redux/api/userApi";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import Avatar from "@mui/material/Avatar";
+// import Avatar from "@mui/material/Avatar";
 import { notification } from "antd";
 
 const UserProfile = () => {
@@ -11,13 +11,21 @@ const UserProfile = () => {
   const { userId } = params;
   const activeUser = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [activeLink, setActiveLink] = useState();
 
   const { data, isLoading, error, isError, isSuccess } =
     useFetchUserQuery(userId);
 
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location.pathname]);
+
   const Links = [
-    { link: `http://localhost:3000/user/${userId}`, tag: "Posts" },
-    { link: `http://localhost:3000/user/${userId}/likes`, tag: "Likes" },
+    { link: `/user/${userId}`, tag: "Posts" },
+    { link: `/user/${userId}/replies`, tag: "Replies" },
+    { link: `/user/${userId}/likes`, tag: "Likes" },
   ];
 
   useEffect(() => {
@@ -29,7 +37,7 @@ const UserProfile = () => {
       });
       console.log(error);
     }
-  }, [data, isLoading, isError, error]);
+  }, [isLoading, isError, error]);
 
   return (
     <Style>
@@ -57,16 +65,22 @@ const UserProfile = () => {
             {activeUser === userId && <p>Edit Profile</p>}
           </ProfileBox>
 
-          <ul>
+          <LinksTab>
             {Links.map(({ link, tag }, i) => {
               return (
-                <li key={i}>
-                  <Link to={link}>{tag}</Link>
-                </li>
+                <Link
+                  key={i}
+                  isActive={activeLink === link}
+                  onClick={() => {
+                    navigate(link);
+                  }}
+                >
+                  {tag}
+                </Link>
               );
             })}
-          </ul>
-          <hr />
+          </LinksTab>
+          {/* <hr /> */}
           <Outlet context={[userId]} />
         </>
       )}
@@ -74,20 +88,36 @@ const UserProfile = () => {
   );
 };
 
-const TabLink = styled.li``;
+const LinksTab = styled.ul`
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  border-bottom: 1px solid grey;
+`;
+
+const Link = styled.li`
+  padding-bottom: 10px;
+  cursor: pointer;
+  font-size: ${(props) => (props.isActive ? "20px" : "18px")};
+  color: grey;
+  color: ${(props) => props.isActive && "inherit"};
+  border-bottom: ${(props) => props.isActive && "3px solid cornflowerblue"};
+`;
 
 const Style = styled.div`
   h4 {
     transform: translateY(-10px);
     color: #536471;
   }
+  ul {
+    list-style-type: none;
+    padding-inline-start: 0;
+  }
 `;
 
 const ProfileBox = styled.div`
   ul {
     display: flex;
-    list-style-type: none;
-    padding-inline-start: 0;
   }
   li {
     margin-right: 10px;

@@ -1,5 +1,4 @@
-import { useSelector } from "react-redux";
-import { useFetchUserPostsQuery } from "../../../redux/api/userApi";
+import { useFetchUserPostsQuery } from "../../../redux/api/postApi";
 import { useEffect } from "react";
 import { notification } from "antd";
 import PostList from "../PostList";
@@ -12,7 +11,6 @@ const Posts = () => {
     useFetchUserPostsQuery(userId);
 
   useEffect(() => {
-    console.log(data);
     if (!isLoading && isError) {
       notification.error({
         message: "Failed to fetch posts.",

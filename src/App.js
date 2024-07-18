@@ -15,6 +15,9 @@ import RequireAuth from "./components/Layout/RequireAuth";
 import Posts from "./components/UI/Profile/Posts";
 import PostPage from "./pages/Post";
 import CreatePost from "./pages/create-post";
+import Comments from "./components/UI/Comments";
+import Replies from "./components/UI/Profile/Replies";
+import Likes from "./components/UI/Profile/Likes";
 
 function App() {
   const token = useSelector((state) => state.auth.token);
@@ -22,6 +25,7 @@ function App() {
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isMobileView, setIsMobileView] = useState(false);
+
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -48,7 +52,11 @@ function App() {
   return (
     <div className="App">
       {showSideNav && token && (
-        <SideNav isMobileView={isMobileView} onToggleSideBar={toggleSideBar} />
+        <SideNav
+          isMobileView={isMobileView}
+          showSideNav={showSideNav}
+          onToggleSideBar={toggleSideBar}
+        />
       )}
       {isMobileView && token && (
         <Toggler onClick={toggleSideBar}>
@@ -62,13 +70,16 @@ function App() {
           <Route path="" element={<RequireAuth />}>
             <Route path="/" exact element={<Home />} />
             <Route path="/create-post" element={<CreatePost />} />
+            <Route path="/post/:postId" element={<PostPage />}>
+              <Route path="" element={<Comments />} />
+            </Route>
             <Route path="/user/:userId" element={<UserProfile />}>
               <Route path="" element={<Posts />} />
-              <Route path="replies" element={<p>Reploesssss</p>} />
-              <Route path="likes" element={<p>likes</p>} />
+              <Route path="replies" element={<Replies />} />
+              <Route path="likes" element={<Likes />} />
             </Route>
           </Route>
-          <Route path="/post/:postId " element={<PostPage />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Container>

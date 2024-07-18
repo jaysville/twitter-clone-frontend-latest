@@ -6,18 +6,74 @@ import {
   ChatBubbleOutlineRounded,
   SwapCalls,
 } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  useToggleLikePostMutation,
+  useToggleRepostMutation,
+} from "../../redux/api/postApi";
+import { useSelector } from "react-redux";
 
 const Post = (props) => {
   const navigate = useNavigate();
-  const { post } = props;
+  const { post, page } = props;
   const { author } = post;
+  const [isLiked, setIsLiked] = useState(false);
+  const [isReposted, setIsReposted] = useState(false);
+  const user = useSelector((state) => state.auth.user);
+
+  const [
+    toggleLikePost,
+    {
+      isSuccess: toggleLikeIsSuccess,
+      isError: toggleLikeIsError,
+      error: toggleLikeError,
+      isLoading: toggleLikeIsLoading,
+    },
+  ] = useToggleLikePostMutation();
+
+  const [
+    toggleRepost,
+    {
+      isSuccess: toggleRepostSuccess,
+      isError: toggleRepostIsError,
+      error: toggleRepostError,
+      isLoading: toggleRepostIsLoading,
+    },
+  ] = useToggleRepostMutation();
 
   const likedByCount = post.likedBy.length;
   const commentCount = post.comments.length;
   const repostCount = post.repostedBy.length;
 
-  const visitProfile = () => {
+  useEffect(() => {
+    if (post.likedBy.includes(user)) {
+      setIsLiked(true);
+    }
+    if (post.repostedBy.includes(user)) {
+      setIsReposted(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (toggleLikeIsSuccess) {
+      setIsLiked((prevState) => !prevState);
+    }
+    if (toggleLikeIsError) {
+      console.log(toggleLikeError);
+    }
+  }, [toggleLikeIsSuccess, toggleLikeIsError, toggleLikeError]);
+
+  useEffect(() => {
+    if (toggleRepostSuccess) {
+      setIsReposted((prevState) => !prevState);
+    }
+    if (toggleRepostIsError) {
+      console.log(toggleRepostError);
+    }
+  }, [toggleRepostError, toggleRepostIsError, toggleRepostSuccess]);
+  const visitProfile = (e) => {
+    e.stopPropagation();
     navigate(`/user/${author._id}`);
   };
 
@@ -25,7 +81,7 @@ const Post = (props) => {
     navigate(`/post/${post._id}`);
   };
   return (
-    <Style>
+    <Style onClick={visitPost} page={page}>
       <Details>
         <h5 onClick={visitProfile}>{author.username} </h5>
         <h5 onClick={visitProfile}>@{author.username}</h5>
@@ -39,19 +95,57 @@ const Post = (props) => {
         </small>
       </Details>
 
-      {/* <Link to={`/post/${post._id}`}> */}
       <ContentBox>{post.content}</ContentBox>
-      {/* </Link> */}
 
-      <ActionsContainer>
-        <div>
-          <FavoriteBorderOutlined /> <small>{likedByCount}</small>
+      <ActionsContainer page={page}>
+        <div
+          onClick={async (e) => {
+            e.stopPropagation();
+            if (toggleLikeIsLoading) {
+              return;
+            }
+            await toggleLikePost(post._id);
+          }}
+        >
+          {isLiked ? (
+            <Favorite style={{ fill: "red" }} />
+          ) : (
+            <>
+              <NotLikedButton disabled={toggleLikeIsLoading} />
+            </>
+          )}
+          <small
+            style={{
+              color: isLiked && "red",
+            }}
+          >
+            {likedByCount}
+          </small>
         </div>
         <div>
-          <ChatBubbleOutlineRounded /> <small>{commentCount}</small>
+          <ReplyBtn /> <small>{commentCount}</small>
         </div>
-        <div>
-          <SwapCalls /> <small>{repostCount}</small>
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            if (toggleRepostIsLoading) {
+              return;
+            }
+            toggleRepost(post._id);
+          }}
+        >
+          <RepostBtn
+            style={{
+              fill: isReposted && "green",
+            }}
+          />
+          <small
+            style={{
+              color: isReposted && "green",
+            }}
+          >
+            {repostCount}
+          </small>
         </div>
       </ActionsContainer>
     </Style>
@@ -60,16 +154,16 @@ const Post = (props) => {
 
 const Style = styled.div`
   min-height: 170px;
-  padding: 10px;
-  border: 1px solid #323b42;
+  padding: 5px;
+  border-bottom: ${(props) => !props.page && "2px solid #323b42"};
   cursor: pointer;
   h5 {
     display: inline;
     margin-right: 2px;
     cursor: pointer;
-    &:hover {
+    /* &:hover {
       text-decoration: underline;
-    }
+    } */
   }
   svg {
     margin-right: 10px;
@@ -91,12 +185,39 @@ const ContentBox = styled.p`
 
 const ActionsContainer = styled.div`
   display: flex;
+  padding-top: 5px;
+  justify-content: space-around;
+  ${(props) =>
+    props.page &&
+    `border: 2px solid #323b42;
+    border-left: none;
+    border-right: none;
+  `};
+  transform: translateY(10px);
+
   div {
     margin: 10px;
   }
   svg {
     transform: translateY(5px);
-    margin-right: 0px;
+  }
+`;
+
+const NotLikedButton = styled(FavoriteBorderOutlined)`
+  &:hover {
+    fill: red;
+  }
+`;
+
+const ReplyBtn = styled(ChatBubbleOutlineRounded)`
+  &:hover {
+    fill: cornflowerblue;
+  }
+`;
+
+const RepostBtn = styled(SwapCalls)`
+  &:hover {
+    fill: green;
   }
 `;
 

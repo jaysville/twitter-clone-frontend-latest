@@ -1,63 +1,82 @@
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
-import { Close, Logout } from "@mui/icons-material";
+import { Logout } from "@mui/icons-material";
+import { useState } from "react";
 
 const SideNav = (props) => {
   const activeUserId = useSelector((state) => state.auth.user);
-  const token = useSelector((state) => state.auth.token);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const location = useLocation();
+
+  const [currentPath, setCurrentPath] = useState(location.pathname);
+
+  const LinkData = [
+    {
+      title: "Home",
+      link: "/",
+      icon: <HomeIcon />,
+      onClick: () => {
+        setCurrentPath("/");
+        navigate("/");
+      },
+    },
+    {
+      title: "Search",
+      link: "/search",
+      icon: <SearchIcon />,
+      onClick: () => {
+        setCurrentPath("/search");
+        navigate("/search");
+      },
+    },
+    {
+      title: "Profile",
+      link: `/user/${activeUserId}`,
+      icon: <PersonIcon />,
+      onClick: () => {
+        setCurrentPath(`/user/${activeUserId}`);
+        navigate(`/user/${activeUserId}`);
+      },
+    },
+    {
+      title: "Logout",
+      icon: <Logout />,
+      onClick: () => {
+        dispatch(logout());
+      },
+    },
+  ];
   return (
     <>
-      <Style onClick={props.onToggleSideBar}>
-        {/* {props.isMobileView && (
-          <CloseBtn onClick={props.onToggleSideBar}>
-            <Close />
-          </CloseBtn>
-        )} */}
+      <Style
+        onClick={() => {
+          if (props.isMobileView) {
+            props.onToggleSideBar();
+          }
+        }}
+      >
         <SideBarList>
-          <Link style={{ textDecoration: "none" }} to="/">
-            <NavLink>
-              <Title>Home</Title>
-              <Icon>
-                <HomeIcon />
-              </Icon>
-            </NavLink>
-          </Link>
-          <Link style={{ textDecoration: "none" }} to="/search">
-            <NavLink>
-              <Title>Search</Title>
-              <Icon>
-                <SearchIcon />
-              </Icon>
-            </NavLink>
-          </Link>
-          <Link style={{ textDecoration: "none" }} to={`/user/${activeUserId}`}>
-            <NavLink>
-              <Title>Profile</Title>
-              <Icon>
-                <PersonIcon />
-              </Icon>
-            </NavLink>
-          </Link>
-          {token && (
-            <NavLink
-              onClick={() => {
-                dispatch(logout());
-              }}
-            >
-              <Title>Logout</Title>
-              <Icon>
-                <Logout />
-              </Icon>
-            </NavLink>
-          )}
+          {LinkData.map(({ title, onClick, link, icon }, i) => {
+            return (
+              <NavLink
+                key={i}
+                onClick={onClick}
+                isActive={currentPath === link}
+              >
+                <Title>{title}</Title>
+                <Icon>{icon}</Icon>
+              </NavLink>
+            );
+          })}
         </SideBarList>
       </Style>
     </>
@@ -67,8 +86,9 @@ const SideNav = (props) => {
 export default SideNav;
 
 const Style = styled.div`
-  background-color: #15202b;
-  padding: 10px;
+  background-color: #0b0201;
+  border-right: 1px solid aliceblue;
+  padding: 10px 0;
   width: 150px;
   height: 100vh;
   z-index: 10000;
@@ -101,6 +121,11 @@ const NavLink = styled.li`
   align-items: center;
   margin-bottom: 30px;
   transition: all 300ms ease-in-out;
+  background-color: ${(props) => props.isActive && "cornflowerblue"};
+  &:hover,
+  &:active {
+    background-color: cornflowerblue;
+  }
 `;
 
 const Icon = styled.div`

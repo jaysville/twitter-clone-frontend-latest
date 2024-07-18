@@ -1,34 +1,32 @@
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { useGetAllPostsQuery } from "../redux/api/postApi";
-import Post from "../components/UI/Post";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import PostList from "../components/UI/PostList";
 import { notification } from "antd";
-import { PostBtn } from "../components/UI/Buttons";
+import { PostPageBtn } from "../components/UI/Buttons";
+
 import { useNavigate } from "react-router-dom";
+import { socket } from "../socket";
 const Home = () => {
   const [posts, setPosts] = useState([]);
   const { data, isLoading, error, isError, isSuccess } = useGetAllPostsQuery();
 
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
-  const token = useSelector((state) => state.auth.token);
+
   useEffect(() => {
-    console.log(data, error);
-    if (!isLoading && isSuccess) {
-      console.log(user);
-      console.log(token);
+    if (isSuccess) {
       setPosts(data?.posts);
     }
-    if (!isLoading && isError) {
+    if (isError) {
       notification.error({
         message: "Failed to fetch posts.",
         duration: 3,
         placement: "bottomRight",
       });
     }
-  }, [data, isLoading, user, isSuccess, token, isError]);
+  }, [data, isSuccess, user, isError]);
 
   return (
     <Style>
@@ -38,7 +36,7 @@ const Home = () => {
       </Nav>
       <hr />
       <div>
-        <PostBtn
+        <PostPageBtn
           onclick={() => {
             navigate("/create-post");
           }}

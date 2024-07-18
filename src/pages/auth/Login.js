@@ -50,7 +50,7 @@ const Login = () => {
       dispatch(updateUser(data.userId));
       dispatch(refreshToken(data.token));
       notification.success({
-        message: "Login Successful",
+        message: "Welcome",
         duration: 3,
         placement: "topRight",
       });
@@ -62,7 +62,7 @@ const Login = () => {
         message:
           error.status === 500 ? "Something went wrong." : error.data.error,
         duration: 3,
-        placement: "bottomRight",
+        placement: "topRight",
       });
     }
   }, [isSuccess, error, isError, isLoading, data, dispatch, navigate]);
