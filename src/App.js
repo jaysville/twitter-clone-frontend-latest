@@ -1,13 +1,11 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import styled from "styled-components";
 import Home from "./pages/Home";
 import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/404";
 import CoronavirusIcon from "@mui/icons-material/Coronavirus";
-
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
-// import BottomNav from "./components/Layout/BottomNav";
 import SideNav from "./components/Layout/SideNav";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -18,6 +16,9 @@ import CreatePost from "./pages/create-post";
 import Comments from "./components/UI/Comments";
 import Replies from "./components/UI/Profile/Replies";
 import Likes from "./components/UI/Profile/Likes";
+import Reposts from "./components/UI/Profile/Reposts";
+import EditPost from "./pages/edit-post";
+import Recommended from "./components/Layout/Recommended";
 
 function App() {
   const token = useSelector((state) => state.auth.token);
@@ -32,7 +33,7 @@ function App() {
     };
     window.addEventListener("resize", handleResize);
 
-    if (windowWidth >= 900) {
+    if (windowWidth >= 700) {
       setShowSideNav(true);
       setIsMobileView(false);
     } else {
@@ -65,16 +66,25 @@ function App() {
       )}
       <Container showSideNav={showSideNav} token={token}>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
+          <Route
+            path="/login"
+            element={!token ? <Login /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/signup"
+            element={!token ? <SignUp /> : <Navigate to="/" />}
+          />
           <Route path="" element={<RequireAuth />}>
             <Route path="/" exact element={<Home />} />
             <Route path="/create-post" element={<CreatePost />} />
+
             <Route path="/post/:postId" element={<PostPage />}>
               <Route path="" element={<Comments />} />
             </Route>
+            <Route path="/post/:postId/edit" element={<EditPost />} />
             <Route path="/user/:userId" element={<UserProfile />}>
               <Route path="" element={<Posts />} />
+              <Route path="reposts" element={<Reposts />} />
               <Route path="replies" element={<Replies />} />
               <Route path="likes" element={<Likes />} />
             </Route>
@@ -82,6 +92,7 @@ function App() {
 
           <Route path="*" element={<NotFound />} />
         </Routes>
+        {token && <Recommended />}
       </Container>
     </div>
   );
@@ -91,7 +102,8 @@ export default App;
 
 const Container = styled.div`
   padding: 80px 30px;
-  @media (min-width: 900px) {
+  max-width: ${(props) => props.token && "600px"};
+  @media (min-width: 700px) {
     margin-left: ${(props) => props.showSideNav && props.token && "190px"};
     margin-right: ${(props) => props.showSideNav && props.token && "80px"};
   }

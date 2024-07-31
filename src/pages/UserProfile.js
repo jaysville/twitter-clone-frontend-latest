@@ -1,22 +1,68 @@
 import styled from "styled-components";
 import { Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
-import { useFetchUserQuery } from "../redux/api/userApi";
+import {
+  useFetchUserQuery,
+  useToggleFollowUserMutation,
+} from "../redux/api/userApi";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 // import Avatar from "@mui/material/Avatar";
-import { notification } from "antd";
+import { notification, Spin } from "antd";
+import {
+  GoBack,
+  PostPageBtn,
+  ProfileActionButton,
+} from "../components/UI/Buttons";
+import Avatar from "@mui/material/Avatar";
 
 const UserProfile = () => {
   const params = useParams();
   const { userId } = params;
   const activeUser = useSelector((state) => state.auth.user);
+  const [isFollowing, setIsFollowing] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const [activeLink, setActiveLink] = useState();
 
-  const { data, isLoading, error, isError, isSuccess } =
-    useFetchUserQuery(userId);
+  const {
+    data: user,
+    isLoading,
+    error,
+    isError,
+    isSuccess,
+  } = useFetchUserQuery(userId);
+
+  // const userFollowing = user.followers.includes(activeUser);
+
+  const [
+    toggleFollowUser,
+    {
+      isSuccess: toggleFollowIsSuccess,
+      isError: toggleFollowIsError,
+      error: toggleFollowError,
+      isLoading: toggleFollowIsLoading,
+    },
+  ] = useToggleFollowUserMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      if (user.followers.includes(activeUser)) {
+        setIsFollowing(true);
+      } else {
+        setIsFollowing(false);
+      }
+    }
+  }, [user, activeUser, isSuccess]);
+
+  useEffect(() => {
+    if (toggleFollowIsSuccess) {
+      setIsFollowing((prevState) => !prevState);
+    }
+    if (toggleFollowIsError) {
+      console.log(toggleFollowError);
+    }
+  }, [toggleFollowIsSuccess, toggleFollowIsError, toggleFollowError]);
 
   useEffect(() => {
     setActiveLink(location.pathname);
@@ -24,6 +70,7 @@ const UserProfile = () => {
 
   const Links = [
     { link: `/user/${userId}`, tag: "Posts" },
+    { link: `/user/${userId}/reposts`, tag: "Reposts" },
     { link: `/user/${userId}/replies`, tag: "Replies" },
     { link: `/user/${userId}/likes`, tag: "Likes" },
   ];
@@ -35,9 +82,13 @@ const UserProfile = () => {
         duration: 3,
         placement: "bottomRight",
       });
-      console.log(error);
     }
   }, [isLoading, isError, error]);
+
+  const handleToggleFollow = () => {
+    if (toggleFollowIsLoading) return;
+    toggleFollowUser(userId);
+  };
 
   return (
     <Style>
@@ -45,24 +96,44 @@ const UserProfile = () => {
       {!isLoading && isError && <p>user not found</p>}
       {!isLoading && isSuccess && (
         <>
+          <GoBack />
+          <Avatar sx={{ width: 130, height: 130 }} />
           <ProfileBox>
-            <h3>{data?.username}</h3>
-            <h4>{data?.email}</h4>
+            <h3>{user?.username}</h3>
+            <h4>{user?.email}</h4>
+
+            <ProfileActionButton
+              onClick={
+                activeUser === userId
+                  ? () => {
+                      navigate("/edit-profile");
+                    }
+                  : handleToggleFollow
+              }
+            >
+              {toggleFollowIsLoading ? (
+                <Spin />
+              ) : activeUser === userId ? (
+                "Edit profile"
+              ) : (
+                `${isFollowing ? "Unfollow" : "Follow"}`
+              )}
+            </ProfileActionButton>
+
             <p>
-              {data?.bio
-                ? data.bio
+              {user?.bio
+                ? user.bio
                 : "Testing biiiiioo, ido not give any fuck fr"}
             </p>
             <ul>
               <li>
-                <b>{data?.following.length}</b> Following
+                <b>{user?.following.length}</b> Following
               </li>
               <li>
-                <b>{data?.followers.length}</b> Follower
-                {data?.followers.length === 1 ? "" : "s"}
+                <b>{user?.followers.length}</b> Follower
+                {user?.followers.length === 1 ? "" : "s"}
               </li>
             </ul>
-            {activeUser === userId && <p>Edit Profile</p>}
           </ProfileBox>
 
           <LinksTab>
@@ -80,7 +151,8 @@ const UserProfile = () => {
               );
             })}
           </LinksTab>
-          {/* <hr /> */}
+
+          <PostPageBtn />
           <Outlet context={[userId]} />
         </>
       )}
@@ -116,6 +188,7 @@ const Style = styled.div`
 `;
 
 const ProfileBox = styled.div`
+  position: relative;
   ul {
     display: flex;
   }
@@ -123,5 +196,7 @@ const ProfileBox = styled.div`
     margin-right: 10px;
   }
 `;
+
+const FollowsYouTag = styled.div``;
 
 export default UserProfile;

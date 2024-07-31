@@ -1,24 +1,41 @@
 import styled from "styled-components";
 
-import { Outlet, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import {
   useCommentOnPostMutation,
   useGetSinglePostQuery,
 } from "../redux/api/postApi";
 import Post from "../components/UI/Post";
+
 import { notification, Spin } from "antd";
-import { PostUploadButton } from "../components/UI/Buttons";
+import {
+  GoBack,
+  PostPageBtn,
+  PostUploadButton,
+} from "../components/UI/Buttons";
+import Avatar from "antd";
 
 const PostPage = () => {
   const params = useParams();
 
   const { postId } = params;
 
+  const navigate = useNavigate();
+
   const [replyContent, setReplyContent] = useState("");
 
-  const { data, isLoading, error, isError, isSuccess } =
-    useGetSinglePostQuery(postId);
+  const [makeComment, setMakeComment] = useState(false);
+
+  const commentRef = useRef();
+
+  useEffect(() => {
+    if (makeComment) {
+      commentRef.current.focus();
+    }
+  }, [makeComment]);
+
+  const { data, isLoading, isError, isSuccess } = useGetSinglePostQuery(postId);
 
   const [
     commentOnPost,
@@ -69,19 +86,32 @@ const PostPage = () => {
       {isLoading && <p>Loading...</p>}
       {!isLoading && isSuccess && (
         <>
+          <GoBack />
           <h2>
             {data.isComment ? (
-              <>{`Replying to ${data.replyingTo.repliedPostAuthor}`}</>
+              <span
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  navigate(`/post/${data.replyingTo.repliedPostId}`);
+                }}
+              >{`Replying to ${data.replyingTo.repliedPostAuthor}`}</span>
             ) : (
               "Post"
             )}
           </h2>
           <hr />
-          <Post post={data} page={"true"} />
+          <Post
+            post={data}
+            page={"true"}
+            handleMakeComment={() => {
+              setMakeComment(true);
+            }}
+          />
           <form>
             <textarea
               placeholder="Reply"
               value={replyContent}
+              ref={commentRef}
               onChange={(e) => {
                 setReplyContent(e.target.value);
               }}
@@ -93,7 +123,7 @@ const PostPage = () => {
               {replyLoading ? <Spin /> : "Reply"}
             </PostUploadButton>
           </form>
-
+          <PostPageBtn />
           <Outlet context={[postId]} />
         </>
       )}
@@ -107,7 +137,8 @@ const Style = styled.div`
   }
   textarea {
     width: 100%;
-    height: 100px;
+    margin-top: 50px;
+    min-height: 100px;
     background-color: transparent;
     outline: none;
     border: none;

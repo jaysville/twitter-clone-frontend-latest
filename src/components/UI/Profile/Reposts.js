@@ -1,18 +1,17 @@
+import { useFetchUserRepostsQuery } from "../../../redux/api/postApi";
 import { useEffect } from "react";
 import { notification } from "antd";
 import PostList from "../PostList";
 import { useOutletContext } from "react-router-dom";
-import { useFetchUserRepliesQuery } from "../../../redux/api/postApi";
 
-const Replies = () => {
+const Reposts = () => {
   const [userId] = useOutletContext();
 
   const { data, isLoading, error, isError, isSuccess } =
-    useFetchUserRepliesQuery(userId);
+    useFetchUserRepostsQuery(userId);
 
   useEffect(() => {
     if (!isLoading && isError) {
-      console.log(error.status);
       notification.error({
         message: "Failed to fetch posts.",
         duration: 3,
@@ -30,4 +29,4 @@ const Replies = () => {
   );
 };
 
-export default Replies;
+export default Reposts;

@@ -8,9 +8,13 @@ import { notification, Spin } from "antd";
 import { useSignupMutation } from "../../redux/api/authApi";
 import { ErrorText } from "./Login";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { refreshToken, updateUser } from "../../redux/slices/authSlice";
 const SignUp = () => {
   const [signup, { isLoading, error, isSuccess, data, isError }] =
     useSignupMutation();
+
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -35,12 +39,15 @@ const SignUp = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      dispatch(updateUser(data.userId));
+      dispatch(refreshToken(data.token));
       notification.success({
-        message: "Account Created",
+        message: "Welcome :)",
         duration: 2,
         placement: "bottomRight",
       });
-      navigate("/login");
+
+      navigate("/");
     }
     if (isError) {
       console.log();

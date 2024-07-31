@@ -50,7 +50,7 @@ const Login = () => {
       dispatch(updateUser(data.userId));
       dispatch(refreshToken(data.token));
       notification.success({
-        message: "Welcome",
+        message: "Welcome Back",
         duration: 3,
         placement: "topRight",
       });

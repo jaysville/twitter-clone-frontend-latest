@@ -36,14 +36,10 @@ const Home = () => {
       </Nav>
       <hr />
       <div>
-        <PostPageBtn
-          onclick={() => {
-            navigate("/create-post");
-          }}
-        />
         {isLoading && <p>Loading....</p>}
         {!isLoading && isSuccess && <PostList posts={posts} />}
         {!isLoading && isError && <p>Something went wrong</p>}
+        <PostPageBtn />
       </div>
     </Style>
   );

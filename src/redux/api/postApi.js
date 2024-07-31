@@ -19,19 +19,55 @@ export const postApi = createApi({
     }),
     getSinglePost: builder.query({
       query: (postId) => `/${postId}`,
-      providesTags: ["Likes", "Comment", "Reposts"],
+      providesTags: ["Likes", "Comment", "Reposts", "Post"],
     }),
     fetchUserPosts: builder.query({
       query: (userId) => `/user/${userId}`,
       providesTags: ["Likes", "Reposts", "Post"],
     }),
+    fetchUserReposts: builder.query({
+      query: (userId) => `/user/${userId}/reposts`,
+      providesTags: ["Reposts"],
+    }),
+    fetchUserReplies: builder.query({
+      query: (userId) => `/user/${userId}/replies`,
+      providesTags: ["Comment"],
+    }),
+    fetchUserLikes: builder.query({
+      query: (userId) => `/user/${userId}/likes`,
+      providesTags: ["Likes"],
+    }),
     createPost: builder.mutation({
-      query: (body) => ({
-        url: "/",
-        method: "POST",
-        body,
-      }),
+      query: ({ content, images }) => {
+        const formData = new FormData();
+        formData.append("content", content);
+        if (images) {
+          for (let i = 0; i < images.length; i++) {
+            formData.append("images", images[i]);
+          }
+        }
+        return {
+          url: "/",
+          method: "POST",
+          body: formData,
+        };
+      },
       invalidatesTags: ["Post"],
+    }),
+    editPost: builder.mutation({
+      query: (body) => ({
+        url: `/edit/${body.postId}`,
+        method: "Post",
+        body: { content: body.content },
+      }),
+      invalidatesTags: ["Post", "Comment"],
+    }),
+    deletePost: builder.mutation({
+      query: (postId) => ({
+        url: `/delete/${postId}`,
+        method: "Delete",
+      }),
+      invalidatesTags: ["Post", "Comment"],
     }),
     getComments: builder.query({
       query: (postId) => `/${postId}/comments`,
@@ -43,7 +79,7 @@ export const postApi = createApi({
         method: "POST",
         body: { content: body.content },
       }),
-      invalidatesTags: ["Comment"],
+      invalidatesTags: ["Comment", "Post"],
     }),
     toggleLikePost: builder.mutation({
       query: (postId) => ({ url: `/likes/${postId}`, method: "Put" }),
@@ -62,7 +98,12 @@ export const postApi = createApi({
 export const {
   useGetAllPostsQuery,
   useFetchUserPostsQuery,
+  useFetchUserRepostsQuery,
+  useFetchUserRepliesQuery,
+  useFetchUserLikesQuery,
   useCreatePostMutation,
+  useEditPostMutation,
+  useDeletePostMutation,
   useGetSinglePostQuery,
   useGetCommentsQuery,
   useCommentOnPostMutation,

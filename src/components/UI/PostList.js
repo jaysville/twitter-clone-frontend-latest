@@ -4,13 +4,19 @@ import Post from "./Post";
 const PostList = (props) => {
   return (
     <Style>
-      {props.posts.map((post, i) => {
-        return (
-          <li key={i}>
-            <Post post={post} />
-          </li>
-        );
-      })}
+      {props.posts.length > 0 ? (
+        props.posts.map((post, i) => {
+          return (
+            <li key={i}>
+              <Post post={post} />
+            </li>
+          );
+        })
+      ) : (
+        <p style={{ textAlign: "center", marginTop: "100px" }}>
+          Nothing to see here yet :(
+        </p>
+      )}
     </Style>
   );
 };
