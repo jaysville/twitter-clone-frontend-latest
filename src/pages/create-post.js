@@ -15,9 +15,16 @@ const CreatePost = () => {
 
   const submitPost = (e) => {
     e.preventDefault();
-    if (!images && content.length < 3) {
+    if (!images && content.length === 0) {
       notification.error({
-        message: "Post should contain at least 3 characters",
+        message: "Post cannot be empty",
+        duration: 3,
+        placement: "bottomRight",
+      });
+      return;
+    } else if (!images && content.length <= 2) {
+      notification.error({
+        message: "Text should contain at least 2 characters",
         duration: 3,
         placement: "bottomRight",
       });
@@ -35,14 +42,15 @@ const CreatePost = () => {
       });
       navigate("/");
     }
-    // if (isError) {
-    //   notification.error({
-    //     message:
-    //       error.status === 500 ? "Something went wrong." : error.data.error,
-    //     duration: 3,
-    //     placement: "bottomRight",
-    //   });
-    // }
+    if (isError) {
+      console.log(error);
+      notification.error({
+        message:
+          error.status === 500 ? "Something went wrong." : error.data.error,
+        duration: 3,
+        placement: "bottomRight",
+      });
+    }
   }, [isSuccess, isError, error, isLoading]);
   return (
     <Style>
@@ -59,12 +67,13 @@ const CreatePost = () => {
           type="file"
           multiple
           onChange={(e) => {
-            // console.log(e.target.files);
-            // let imageFiles = [];
-            // for (let i = 0; i < e.target.files.length; i++) {
-            //   imageFiles.push(e.target.files[i]);
-            // }
-            setImages(e.target.files);
+            const selectedFiles = Array.from(e.target.files);
+            const uniqueFiles = selectedFiles.filter(
+              (file, index, self) =>
+                index === self.findIndex((f) => f.name === file.name)
+            );
+
+            setImages(uniqueFiles);
           }}
         />
         <PostUploadButton

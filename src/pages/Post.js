@@ -9,14 +9,15 @@ import {
 import Post from "../components/UI/Post";
 
 import { notification, Spin } from "antd";
+
 import {
   GoBack,
   PostPageBtn,
   PostUploadButton,
 } from "../components/UI/Buttons";
-import Avatar from "antd";
 
 const PostPage = () => {
+  
   const params = useParams();
 
   const { postId } = params;

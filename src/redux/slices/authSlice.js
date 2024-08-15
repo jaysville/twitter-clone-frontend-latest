@@ -15,7 +15,6 @@ const authSlice = createSlice({
   reducers: {
     updateUser: (state, action) => {
       state.user = action.payload;
-      console.log(action.payload);
     },
     refreshToken: (state, action) => {
       const newToken = action.payload;
@@ -23,7 +22,6 @@ const authSlice = createSlice({
       state.token = newToken;
       state.timeout = false;
       state.sessionExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
-      console.log(state.sessionExpiresAt);
     },
     timeout: (state) => {
       state.user = null;

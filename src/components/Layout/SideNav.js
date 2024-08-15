@@ -1,8 +1,6 @@
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
-import { logout } from "../../redux/slices/authSlice";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
@@ -13,7 +11,6 @@ const SideNav = (props) => {
   const activeUserId = useSelector((state) => state.auth.user);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const location = useLocation();
 
@@ -51,7 +48,7 @@ const SideNav = (props) => {
       title: "Logout",
       icon: <Logout />,
       onClick: () => {
-        dispatch(logout());
+        props.openLogoutModal();
       },
     },
   ];

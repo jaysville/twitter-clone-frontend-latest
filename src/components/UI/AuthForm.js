@@ -12,9 +12,13 @@ const Style = styled.form`
   align-items: center;
 
   @media (max-width: 790px) {
+    width: 60%;
+  }
+  @media (max-width: 600px) {
     width: 90%;
   }
-  input {
+  input,
+  textarea {
     width: 100%;
     color: #bfd2ff;
     line-height: 2.2rem;
@@ -26,6 +30,7 @@ const Style = styled.form`
     background-color: transparent;
     outline: none;
     border: none;
+    resize: none;
   }
 `;
 
@@ -45,8 +50,10 @@ export const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 400px;
 
+  span {
+    font-size: 10px;
+  }
   border-radius: 2px;
   padding: 1.3rem 1.2rem;
   @media (max-width: 790px) {

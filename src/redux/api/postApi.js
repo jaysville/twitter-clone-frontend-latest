@@ -2,6 +2,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const postApi = createApi({
   reducerPath: "postApi",
+  refetchOnReconnect: true,
+
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.REACT_APP_SERVER_URL}/posts`,
     prepareHeaders: (headers, { getState }) => {
@@ -55,11 +57,17 @@ export const postApi = createApi({
       invalidatesTags: ["Post"],
     }),
     editPost: builder.mutation({
-      query: (body) => ({
-        url: `/edit/${body.postId}`,
-        method: "Post",
-        body: { content: body.content },
-      }),
+      query: ({ postId, content, imagesToDelete, newImages }) => {
+        const formData = new FormData();
+        formData.append("content", content);
+        formData.append("imagesToDelete", imagesToDelete);
+        if (newImages) {
+          for (let i = 0; i < newImages.length; i++) {
+            formData.append("images", newImages[i]);
+          }
+        }
+        return { url: `/edit/${postId}`, method: "Post", body: formData };
+      },
       invalidatesTags: ["Post", "Comment"],
     }),
     deletePost: builder.mutation({
@@ -67,11 +75,11 @@ export const postApi = createApi({
         url: `/delete/${postId}`,
         method: "Delete",
       }),
-      invalidatesTags: ["Post", "Comment"],
+      invalidatesTags: ["Post", "Comment", "Reposts", "Likes"],
     }),
     getComments: builder.query({
       query: (postId) => `/${postId}/comments`,
-      providesTags: ["Comment", "Likes", "Reposts"],
+      providesTags: ["Comment", "Likes", "Reposts", "Post"],
     }),
     commentOnPost: builder.mutation({
       query: (body) => ({
@@ -83,7 +91,7 @@ export const postApi = createApi({
     }),
     toggleLikePost: builder.mutation({
       query: (postId) => ({ url: `/likes/${postId}`, method: "Put" }),
-      invalidatesTags: ["Likes"],
+      invalidatesTags: ["Likes", "Posts"],
     }),
     toggleRepost: builder.mutation({
       query: (postId) => ({

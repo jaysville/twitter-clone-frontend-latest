@@ -12,7 +12,6 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   const { data, isLoading, error, isError, isSuccess } = useGetAllPostsQuery();
 
-  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {

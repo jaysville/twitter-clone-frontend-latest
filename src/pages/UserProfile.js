@@ -97,10 +97,13 @@ const UserProfile = () => {
       {!isLoading && isSuccess && (
         <>
           <GoBack />
-          <Avatar sx={{ width: 130, height: 130 }} />
+          <Avatar
+            sx={{ width: 130, height: 130 }}
+            src={user.profilePic || ""}
+          />
           <ProfileBox>
-            <h3>{user?.username}</h3>
-            <h4>{user?.email}</h4>
+            <h3>{user?.displayName || user?.email}</h3>
+            <h4>{user?.username}</h4>
 
             <ProfileActionButton
               onClick={

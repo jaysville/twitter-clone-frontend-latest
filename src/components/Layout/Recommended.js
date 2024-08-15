@@ -24,7 +24,7 @@ const Style = styled.div`
   background-color: #0b0201;
   border-left: 1px solid aliceblue;
   padding: 10px 0;
-  width: 200px;
+  width: 300px;
   height: 100vh;
   z-index: -1;
   position: fixed;

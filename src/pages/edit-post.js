@@ -13,7 +13,7 @@ const EditPost = () => {
   const params = useParams();
   const { postId } = params;
   const navigate = useNavigate();
-  const { data, isError, isSuccess } = useGetSinglePostQuery(postId);
+  const { data, isError, isSuccess, error } = useGetSinglePostQuery(postId);
   const [
     editPost,
     {
@@ -25,22 +25,31 @@ const EditPost = () => {
   ] = useEditPostMutation();
 
   const [post, setPost] = useState("");
+  const [postImages, setPostImages] = useState([]);
+  const [newImages, setNewImages] = useState([]);
+  const [imagesToDelete, setImagesToDelete] = useState([]);
 
   useEffect(() => {
     if (isSuccess) {
+      console.log(data);
       setPost(data.content);
+      setPostImages(data.images);
     }
     if (isError) {
       notification.error({
-        message: "Something went wrong :(",
+        message: error.data.error,
         duration: 3,
         placement: "bottomRight",
       });
     }
-  }, [isSuccess, isError]);
+  }, [isSuccess, isError, error]);
 
   const handleEditPost = () => {
-    if (post === data.content) {
+    if (
+      post === data.content &&
+      imagesToDelete.length === 0 &&
+      newImages.length === 0
+    ) {
       notification.error({
         message: "No changes made.",
         duration: 3,
@@ -48,7 +57,26 @@ const EditPost = () => {
       });
       return;
     }
-    editPost({ content: post, postId });
+    editPost({
+      content: post,
+      postId,
+      newImages,
+      imagesToDelete: imagesToDelete.map((img, i) => {
+        return img.url;
+      }),
+    });
+  };
+
+  const handleCheckboxChange = (index, url) => {
+    setImagesToDelete((prevImagesToDelete) => {
+      const image = { index, url };
+      const isSelected = prevImagesToDelete.some((img) => img.index === index);
+      if (isSelected) {
+        return prevImagesToDelete.filter((img) => img.index !== index);
+      } else {
+        return [...prevImagesToDelete, image];
+      }
+    });
   };
 
   useEffect(() => {
@@ -63,12 +91,13 @@ const EditPost = () => {
     if (editPostIsError) {
       console.log(editPostError);
       notification.error({
-        message: "Something went wrong.",
+        message: editPostError.data.error,
         duration: 3,
-        placement: "bottomRight",
+        placement: "top",
       });
     }
-  }, [editPostIsSuccess, editPostIsError, editPostError]);
+  }, [editPostIsSuccess, editPostIsError, editPostError, error]);
+
   return (
     <Style>
       <GoBack />
@@ -82,15 +111,44 @@ const EditPost = () => {
           }}
         />
 
+        {data?.isComment === false && (
+          <input
+            type="file"
+            multiple
+            onChange={(e) => {
+              setNewImages(e.target.files);
+            }}
+          />
+        )}
         <PostUploadButton
           onClick={(e) => {
             e.preventDefault();
             handleEditPost();
           }}
-          disabled={editPostIsLoading || post.trim().length < 3}
+          disabled={editPostIsLoading}
         >
-          {editPostIsLoading ? <Spin /> : " Edit"}
+          {editPostIsLoading ? <Spin /> : "Save"}
         </PostUploadButton>
+        {postImages.length > 0 && (
+          <>
+            <small>The selected images will be deleted on save</small>
+            <PostImgsContainer>
+              {postImages.map((img, i) => {
+                return (
+                  <ImgContainer key={i}>
+                    <img src={img} alt={`${img - i}`} />
+                    <input
+                      type="checkbox"
+                      onChange={() => {
+                        handleCheckboxChange(i, img);
+                      }}
+                    />
+                  </ImgContainer>
+                );
+              })}
+            </PostImgsContainer>
+          </>
+        )}
       </form>
     </Style>
   );
@@ -112,6 +170,34 @@ const Style = styled.div`
     outline: none;
     border: none;
     color: aliceblue;
+  }
+`;
+
+const PostImgsContainer = styled.div`
+  margin-top: 20px;
+  display: grid;
+  gap: 10px;
+  grid-template-rows: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+`;
+
+const ImgContainer = styled.div`
+  position: relative;
+  width: 150px;
+  img {
+    width: 100%;
+  }
+  svg {
+    position: absolute;
+    top: -3px;
+    right: 15px;
+    transform: scale(0.8);
+    fill: black;
+  }
+  input {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 `;
 

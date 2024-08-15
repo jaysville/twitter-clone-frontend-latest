@@ -15,7 +15,24 @@ export const userApi = createApi({
   endpoints: (builder) => ({
     fetchUser: builder.query({
       query: (userId) => `/${userId}`,
-      providesTags: ["Likes", "Reposts", "Follow"],
+      providesTags: ["Edit", "Likes", "Reposts", "Follow"],
+    }),
+    editProfile: builder.mutation({
+      query: ({ profilePic, displayName, bio }) => {
+        const formdata = new FormData();
+        if (profilePic) {
+          formdata.append("images", profilePic[0]);
+        }
+        formdata.append("displayName", displayName);
+        formdata.append("bio", bio);
+
+        return {
+          url: "/edit",
+          method: "POST",
+          body: formdata,
+        };
+      },
+      invalidatesTags: ["Edit"],
     }),
     toggleFollowUser: builder.mutation({
       query: (userToFollowId) => ({
@@ -27,4 +44,8 @@ export const userApi = createApi({
   }),
 });
 
-export const { useFetchUserQuery, useToggleFollowUserMutation } = userApi;
+export const {
+  useFetchUserQuery,
+  useEditProfileMutation,
+  useToggleFollowUserMutation,
+} = userApi;

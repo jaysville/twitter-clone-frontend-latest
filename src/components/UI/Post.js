@@ -15,7 +15,7 @@ import {
   useToggleRepostMutation,
   useDeletePostMutation,
 } from "../../redux/api/postApi";
-import { notification } from "antd";
+import { notification, Carousel, Modal } from "antd";
 import { useSelector } from "react-redux";
 import { Avatar } from "@mui/material";
 
@@ -25,14 +25,26 @@ const Post = (props) => {
   const { author } = post;
   const [isLiked, setIsLiked] = useState(false);
   const [isReposted, setIsReposted] = useState(false);
+
   const user = useSelector((state) => state.auth.user);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOk = async () => {
+    setIsModalOpen(false);
+
+    await deletePost(post._id);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   const [
     toggleLikePost,
     {
       isSuccess: toggleLikeIsSuccess,
-      isError: toggleLikeIsError,
-      error: toggleLikeError,
+
       isLoading: toggleLikeIsLoading,
     },
   ] = useToggleLikePostMutation();
@@ -93,9 +105,7 @@ const Post = (props) => {
         duration: 1,
         placement: "topRight",
       });
-      if (!post.isComment) {
-        navigate("/");
-      }
+      navigate("/");
     }
     if (deletePostIsError) {
       notification.error({
@@ -125,17 +135,28 @@ const Post = (props) => {
   };
 
   const handleDeletePost = async (e) => {
+    e.stopPropagation();
     if (deletePostIsLoading) {
       return;
     }
-    e.stopPropagation();
-    await deletePost(post._id);
+    setIsModalOpen(true);
   };
   return (
     <Style onClick={visitPost} page={page}>
+      <Modal
+        title="Delete Post"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        Are you sure you want to delete post ?
+      </Modal>
       <Details>
-        <ProfilePic sx={{ width: 35, height: 35 }} />
-        <h5 onClick={visitProfile}>{author.username} </h5>
+        <ProfilePic
+          sx={{ width: 35, height: 35 }}
+          src={author.profilePic || ""}
+        />
+        <h5 onClick={visitProfile}>{author.displayName || author.username} </h5>
         <h5 onClick={visitProfile}>@{author.username}</h5>
 
         <small>
@@ -159,10 +180,16 @@ const Post = (props) => {
         )}
       </Details>
 
-      <ContentBox>{post.content}</ContentBox>
-      <ImageContainer>
-        <img src={post.images[0]} />
-      </ImageContainer>
+      {post.content && <ContentBox>{post.content}</ContentBox>}
+      {post.images.length > 0 && (
+        <ImageContainer>
+          <Carousel arrows autoplay>
+            {post.images.map((url, i) => {
+              return <img src={url} alt="post" key={i} />;
+            })}
+          </Carousel>
+        </ImageContainer>
+      )}
       <ActionsContainer page={page}>
         <div onClick={handleToggleLike}>
           {isLiked ? (
@@ -267,7 +294,7 @@ const ActionsContainer = styled.div`
     border-right: none;
   `};
   transform: translateY(10px);
-
+  margin-bottom: 10px;
   div {
     margin: 10px;
   }
