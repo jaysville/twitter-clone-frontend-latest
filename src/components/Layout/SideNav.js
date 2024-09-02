@@ -2,8 +2,8 @@ import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import HomeIcon from "@mui/icons-material/Home";
-import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Logout } from "@mui/icons-material";
 import { useState } from "react";
 
@@ -16,6 +16,10 @@ const SideNav = (props) => {
 
   const [currentPath, setCurrentPath] = useState(location.pathname);
 
+  const { notifications } = props;
+
+  const unviewedNotifs = notifications.filter((notif) => !notif.viewed);
+
   const LinkData = [
     {
       title: "Home",
@@ -26,13 +30,19 @@ const SideNav = (props) => {
         navigate("/");
       },
     },
+
     {
-      title: "Search",
-      link: "/search",
-      icon: <SearchIcon />,
+      title: "Alert",
+      link: "/notifications",
+      icon: (
+        <Badge>
+          {unviewedNotifs.length > 0 && <span>{unviewedNotifs.length}</span>}
+          <NotificationsIcon />
+        </Badge>
+      ),
       onClick: () => {
-        setCurrentPath("/search");
-        navigate("/search");
+        setCurrentPath("/notifications");
+        navigate("/notifications");
       },
     },
     {
@@ -54,24 +64,21 @@ const SideNav = (props) => {
   ];
   return (
     <>
-      <Style
-        onClick={() => {
-          if (props.isMobileView) {
-            props.onToggleSideBar();
-          }
-        }}
-      >
+      <Style mobileView={props.isMobileView}>
         <SideBarList>
           {LinkData.map(({ title, onClick, link, icon }, i) => {
             return (
-              <NavLink
-                key={i}
-                onClick={onClick}
-                isActive={currentPath === link}
-              >
-                <Title>{title}</Title>
-                <Icon>{icon}</Icon>
-              </NavLink>
+              <a href={link}>
+                <NavLink
+                  key={i}
+                  mobileView={props.isMobileView}
+                  onClick={onClick}
+                  isActive={currentPath === link}
+                >
+                  {!props.isMobileView && <Title>{title}</Title>}
+                  <Icon>{icon}</Icon>
+                </NavLink>
+              </a>
             );
           })}
         </SideBarList>
@@ -86,15 +93,18 @@ const Style = styled.div`
   background-color: #0b0201;
   border-right: 1px solid aliceblue;
   padding: 10px 0;
-  width: 150px;
+  width: ${(props) => (props.mobileView ? "40px" : "150px")};
   height: 100vh;
-  z-index: 10000;
+
   position: fixed;
   left: 0;
   top: 0;
   ul {
     list-style-type: none;
     padding-inline-start: 0;
+  }
+  span {
+    transform: translateX(-6px) translateY(-4px);
   }
 `;
 
@@ -110,8 +120,9 @@ const SideBarList = styled.ul`
 
 const NavLink = styled.li`
   width: 100%;
-  height: 60px;
+  height: 50px;
   color: aliceblue;
+  position: relative;
   display: flex;
   justify-content: center;
   cursor: pointer;
@@ -123,10 +134,18 @@ const NavLink = styled.li`
   &:active {
     background-color: cornflowerblue;
   }
+  span {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+  svg {
+    margin-left: 10px;
+  }
 `;
 
 const Icon = styled.div`
-  flex: 30%;
+  flex: 40%;
   display: grid;
   /* place-items: center; */
   font-size: 25px;
@@ -134,8 +153,24 @@ const Icon = styled.div`
 const Title = styled.div`
   font-size: 20px;
 
-  flex: 70%;
+  flex: 60%;
   text-align: center;
 `;
 
-// const CloseBtn = styled.button`position: absolute`;
+const Badge = styled.div`
+  position: relative;
+
+  span {
+    position: absolute;
+    width: 35px;
+    top: -10px;
+    right: 0;
+    border-radius: 10px;
+    transform: scale(0.7);
+    background-color: #1976d2;
+    @media (max-width: 750px) {
+      transform: scale(0.5);
+      right: -6px;
+    }
+  }
+`;

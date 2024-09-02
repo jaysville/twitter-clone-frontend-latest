@@ -9,8 +9,8 @@ import { loginSchema } from "../../schemas";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { refreshToken, updateUser } from "../../redux/slices/authSlice";
-import { notification, Spin } from "antd";
 
+import { notification, Spin } from "antd";
 const Login = () => {
   const [login, { isLoading, error, isSuccess, data, isError }] =
     useLoginMutation();
@@ -49,6 +49,7 @@ const Login = () => {
     if (isSuccess) {
       dispatch(updateUser(data.userId));
       dispatch(refreshToken(data.token));
+
       notification.success({
         message: "Welcome Back",
         duration: 3,

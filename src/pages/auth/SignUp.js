@@ -10,6 +10,7 @@ import { ErrorText } from "./Login";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { refreshToken, updateUser } from "../../redux/slices/authSlice";
+
 const SignUp = () => {
   const [signup, { isLoading, error, isSuccess, data, isError }] =
     useSignupMutation();
@@ -41,6 +42,7 @@ const SignUp = () => {
     if (isSuccess) {
       dispatch(updateUser(data.userId));
       dispatch(refreshToken(data.token));
+
       notification.success({
         message: "Welcome :)",
         duration: 2,

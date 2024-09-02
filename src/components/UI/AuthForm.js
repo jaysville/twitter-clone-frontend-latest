@@ -30,7 +30,6 @@ const Style = styled.form`
     background-color: transparent;
     outline: none;
     border: none;
-    resize: none;
   }
 `;
 

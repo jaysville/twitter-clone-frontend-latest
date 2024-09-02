@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import { useGetAllPostsQuery } from "../redux/api/postApi";
+import {
+  useFetchFollowingPostsQuery,
+  useGetAllPostsQuery,
+} from "../redux/api/postApi";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import PostList from "../components/UI/PostList";
 import { notification } from "antd";
 import { PostPageBtn } from "../components/UI/Buttons";
 
-import { useNavigate } from "react-router-dom";
-import { socket } from "../socket";
 const Home = () => {
   const [posts, setPosts] = useState([]);
+  const [feed, setFeed] = useState("");
   const { data, isLoading, error, isError, isSuccess } = useGetAllPostsQuery();
-
+  const {
+    data: followingPosts,
+    isLoading: followingPostsIsLoading,
+    isError: followingPostsIsError,
+    isSuccess: followingPostsIsSuccess,
+  } = useFetchFollowingPostsQuery();
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
@@ -27,11 +34,35 @@ const Home = () => {
     }
   }, [data, isSuccess, user, isError]);
 
+  useEffect(() => {
+    if (feed === "following") {
+      if (followingPostsIsSuccess) {
+        setPosts(followingPosts);
+      } else {
+        setPosts(data?.posts);
+      }
+    }
+  }, [feed, followingPostsIsSuccess]);
+
   return (
     <Style>
       <Nav>
-        <li>For You</li>
-        <li>Following</li>
+        <NavLink
+          active={feed === ""}
+          onClick={() => {
+            setFeed("");
+          }}
+        >
+          For You
+        </NavLink>
+        <NavLink
+          onClick={() => {
+            setFeed("following");
+          }}
+          active={feed === "following"}
+        >
+          Following
+        </NavLink>
       </Nav>
       <hr />
       <div>
@@ -51,9 +82,10 @@ const Nav = styled.ul`
   padding-inline-start: 0;
   justify-content: space-around;
   list-style-type: none;
-
-  li {
-  }
+`;
+const NavLink = styled.li`
+  cursor: pointer;
+  color: ${(props) => props.active && "Cornflowerblue"};
 `;
 
 export default Home;

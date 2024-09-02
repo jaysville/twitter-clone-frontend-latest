@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const postApi = createApi({
   reducerPath: "postApi",
   refetchOnReconnect: true,
+  refetchOnMountOrArgChange: true,
 
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.REACT_APP_SERVER_URL}/posts`,
@@ -19,25 +20,29 @@ export const postApi = createApi({
       query: () => "/",
       providesTags: ["Post", "Likes", "Reposts"],
     }),
+    fetchFollowingPosts: builder.query({
+      query: () => "/following",
+      providesTags: ["Post"],
+    }),
     getSinglePost: builder.query({
       query: (postId) => `/${postId}`,
       providesTags: ["Likes", "Comment", "Reposts", "Post"],
     }),
     fetchUserPosts: builder.query({
       query: (userId) => `/user/${userId}`,
-      providesTags: ["Likes", "Reposts", "Post"],
+      providesTags: ["Likes", "Reposts", "Post", "Edit"],
     }),
     fetchUserReposts: builder.query({
       query: (userId) => `/user/${userId}/reposts`,
-      providesTags: ["Reposts"],
+      providesTags: ["Comment", "Likes", "Post", "Edit", "Reposts"],
     }),
     fetchUserReplies: builder.query({
       query: (userId) => `/user/${userId}/replies`,
-      providesTags: ["Comment"],
+      providesTags: ["Comment", "Likes", "Post", "Edit", "Reposts"],
     }),
     fetchUserLikes: builder.query({
       query: (userId) => `/user/${userId}/likes`,
-      providesTags: ["Likes"],
+      providesTags: ["Comment", "Likes", "Post", "Edit", "Reposts"],
     }),
     createPost: builder.mutation({
       query: ({ content, images }) => {
@@ -87,24 +92,25 @@ export const postApi = createApi({
         method: "POST",
         body: { content: body.content },
       }),
-      invalidatesTags: ["Comment", "Post"],
+      invalidatesTags: ["Comment", "Post", "Notification"],
     }),
     toggleLikePost: builder.mutation({
       query: (postId) => ({ url: `/likes/${postId}`, method: "Put" }),
-      invalidatesTags: ["Likes", "Posts"],
+      invalidatesTags: ["Likes", "Posts", "Notification"],
     }),
     toggleRepost: builder.mutation({
       query: (postId) => ({
         url: `/reposts/${postId}`,
         method: "Put",
       }),
-      invalidatesTags: ["Reposts"],
+      invalidatesTags: ["Reposts", "Notification"],
     }),
   }),
 });
 
 export const {
   useGetAllPostsQuery,
+  useFetchFollowingPostsQuery,
   useFetchUserPostsQuery,
   useFetchUserRepostsQuery,
   useFetchUserRepliesQuery,

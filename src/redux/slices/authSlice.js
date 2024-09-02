@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { socket } from "../../socket";
 
 const initialState = {
   user: null,
@@ -20,6 +21,7 @@ const authSlice = createSlice({
       const newToken = action.payload;
       console.log(newToken);
       state.token = newToken;
+      socket.connect();
       state.timeout = false;
       state.sessionExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
     },
@@ -28,6 +30,7 @@ const authSlice = createSlice({
       state.token = null;
       state.timeout = true;
       state.sessionExpiresAt = null;
+      socket.disconnect();
     },
     logout: (state) => {
       state.token = null;
@@ -35,6 +38,7 @@ const authSlice = createSlice({
       state.timeout = false;
       state.sessionExpiresAt = null;
       state.didLogOut = true;
+      socket.disconnect();
     },
   },
 });

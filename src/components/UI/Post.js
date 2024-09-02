@@ -21,7 +21,7 @@ import { Avatar } from "@mui/material";
 
 const Post = (props) => {
   const navigate = useNavigate();
-  const { post, page, handleMakeComment } = props;
+  const { post, handleMakeComment } = props;
   const { author } = post;
   const [isLiked, setIsLiked] = useState(false);
   const [isReposted, setIsReposted] = useState(false);
@@ -36,7 +36,8 @@ const Post = (props) => {
     await deletePost(post._id);
   };
 
-  const handleCancel = () => {
+  const handleCancel = (e) => {
+    e.stopPropagation();
     setIsModalOpen(false);
   };
 
@@ -142,7 +143,7 @@ const Post = (props) => {
     setIsModalOpen(true);
   };
   return (
-    <Style onClick={visitPost} page={page}>
+    <Style onClick={visitPost}>
       <Modal
         title="Delete Post"
         open={isModalOpen}
@@ -190,7 +191,7 @@ const Post = (props) => {
           </Carousel>
         </ImageContainer>
       )}
-      <ActionsContainer page={page}>
+      <ActionsContainer>
         <div onClick={handleToggleLike}>
           {isLiked ? (
             <Favorite style={{ fill: "red" }} />
@@ -240,7 +241,6 @@ const Post = (props) => {
 const Style = styled.div`
   min-height: 170px;
   padding: 5px;
-  border-bottom: ${(props) => !props.page && "2px solid #323b42"};
   cursor: pointer;
   h5 {
     display: inline;
@@ -252,13 +252,13 @@ const Style = styled.div`
 const Details = styled.div`
   display: flex;
   small {
-    transform: translateY(22px);
+    transform: translateY(19px);
     color: gray;
   }
 `;
 
 const CrudContainer = styled.div`
-  transform: translateY(22px);
+  transform: translateY(15px);
   margin-left: auto;
   svg {
     margin-right: 10px;
@@ -272,10 +272,11 @@ const ProfilePic = styled(Avatar)`
 `;
 
 const ContentBox = styled.p`
-  transform: translateY(-20px);
+  transform: translateY(-15px);
 `;
 
 const ImageContainer = styled.div`
+  margin-bottom: 10px;
   img {
     width: 100%;
     border-radius: 5px;
@@ -287,13 +288,9 @@ const ActionsContainer = styled.div`
   display: flex;
   padding-top: 5px;
   justify-content: space-between;
-  ${(props) =>
-    props.page &&
-    `border: 2px solid #323b42;
-    border-left: none;
-    border-right: none;
-  `};
-  transform: translateY(10px);
+  border: 2px solid #323b42;
+  border-left: none;
+  border-right: none;
   margin-bottom: 10px;
   div {
     margin: 10px;

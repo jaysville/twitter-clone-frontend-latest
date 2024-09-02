@@ -6,7 +6,6 @@ import {
 } from "../redux/api/userApi";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-// import Avatar from "@mui/material/Avatar";
 import { notification, Spin } from "antd";
 import {
   GoBack,
@@ -20,6 +19,7 @@ const UserProfile = () => {
   const { userId } = params;
   const activeUser = useSelector((state) => state.auth.user);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followsYou, setFollowsYou] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,8 +33,6 @@ const UserProfile = () => {
     isSuccess,
   } = useFetchUserQuery(userId);
 
-  // const userFollowing = user.followers.includes(activeUser);
-
   const [
     toggleFollowUser,
     {
@@ -47,10 +45,17 @@ const UserProfile = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      console.log(user.following, activeUser);
       if (user.followers.includes(activeUser)) {
         setIsFollowing(true);
       } else {
         setIsFollowing(false);
+      }
+
+      if (user.following.includes(activeUser)) {
+        setFollowsYou(true);
+      } else {
+        setFollowsYou(false);
       }
     }
   }, [user, activeUser, isSuccess]);
@@ -97,14 +102,16 @@ const UserProfile = () => {
       {!isLoading && isSuccess && (
         <>
           <GoBack />
-          <Avatar
+          <ProfilePic
             sx={{ width: 130, height: 130 }}
             src={user.profilePic || ""}
           />
           <ProfileBox>
-            <h3>{user?.displayName || user?.email}</h3>
-            <h4>{user?.username}</h4>
-
+            <span className="displayName">
+              {user?.displayName || user?.email}
+            </span>
+            <span className="username">@{user?.username}</span>
+            {followsYou && <FollowsYouTag>Follows You</FollowsYouTag>}
             <ProfileActionButton
               onClick={
                 activeUser === userId
@@ -123,16 +130,21 @@ const UserProfile = () => {
               )}
             </ProfileActionButton>
 
-            <p>
-              {user?.bio
-                ? user.bio
-                : "Testing biiiiioo, ido not give any fuck fr"}
-            </p>
+            {user?.bio && <p>{user.bio} </p>}
+
             <ul>
-              <li>
+              <li
+                onClick={() => {
+                  navigate(`/user/${userId}/following`);
+                }}
+              >
                 <b>{user?.following.length}</b> Following
               </li>
-              <li>
+              <li
+                onClick={() => {
+                  navigate(`/user/${userId}/followers`);
+                }}
+              >
                 <b>{user?.followers.length}</b> Follower
                 {user?.followers.length === 1 ? "" : "s"}
               </li>
@@ -169,6 +181,9 @@ const LinksTab = styled.ul`
   margin-top: 20px;
   border-bottom: 1px solid grey;
 `;
+const ProfilePic = styled(Avatar)`
+  transform: translateX(-12px);
+`;
 
 const Link = styled.li`
   padding-bottom: 10px;
@@ -192,14 +207,38 @@ const Style = styled.div`
 
 const ProfileBox = styled.div`
   position: relative;
+  span {
+    display: block;
+  }
+  span.displayName {
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+  span.username {
+    color: grey;
+  }
   ul {
     display: flex;
   }
   li {
     margin-right: 10px;
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 `;
 
-const FollowsYouTag = styled.div``;
+const FollowsYouTag = styled.div`
+  width: 60px;
+  text-align: center;
+  border: 1px solid transparent;
+  font-size: 10px;
+  background-color: grey;
+  padding: 4px;
+  border-radius: 5px;
+  margin-top: 20px;
+`;
 
 export default UserProfile;

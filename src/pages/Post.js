@@ -17,7 +17,6 @@ import {
 } from "../components/UI/Buttons";
 
 const PostPage = () => {
-  
   const params = useParams();
 
   const { postId } = params;
@@ -103,7 +102,6 @@ const PostPage = () => {
           <hr />
           <Post
             post={data}
-            page={"true"}
             handleMakeComment={() => {
               setMakeComment(true);
             }}

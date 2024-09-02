@@ -6,7 +6,6 @@ import { Provider } from "react-redux";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 import { persistor } from "./redux/store";
-
 import App from "./App";
 import "./index.css";
 import { store } from "./redux/store";
