@@ -104,7 +104,7 @@ const UserProfile = () => {
           />
           <ProfileBox>
             <span className="displayName">
-              {user?.displayName || user?.email}
+              {user?.displayName || user?.username}
             </span>
             <span className="username">@{user?.username}</span>
             {followsYou && <FollowsYouTag>Follows You</FollowsYouTag>}
@@ -208,8 +208,10 @@ const ProfileBox = styled.div`
   }
   span.displayName {
     font-size: 15px;
+    width: 250px;
     font-weight: bold;
     margin-top: 20px;
+    overflow-wrap: break-word;
   }
   span.username {
     color: grey;
