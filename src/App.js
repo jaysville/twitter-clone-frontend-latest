@@ -195,7 +195,7 @@ const Container = styled.div`
 
 const Box = styled.div`
   position: fixed;
-  top: 91%;
+  bottom: 0;
 
   left: 0;
   width: 100%;

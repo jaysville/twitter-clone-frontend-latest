@@ -176,5 +176,8 @@ const Badge = styled.div`
       top: 0;
       right: 55px;
     }
+    @media (max-width: 650px) {
+      left: 40%;
+    }
   }
 `;
