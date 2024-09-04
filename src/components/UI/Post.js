@@ -115,7 +115,7 @@ const Post = (props) => {
         placement: "topRight",
       });
     }
-  }, [deletePostError, deletePostIsError, deletePostIsSuccess]);
+  }, [deletePostError, deletePostIsError, deletePostIsSuccess, navigate]);
 
   const visitProfile = (e) => {
     e.stopPropagation();
@@ -272,7 +272,7 @@ const ProfilePic = styled(Avatar)`
 `;
 
 const ContentBox = styled.p`
-  transform: translateY(-15px);
+  transform: translateY(-7px);
 `;
 
 const ImageContainer = styled.div`

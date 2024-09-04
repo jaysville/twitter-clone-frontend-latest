@@ -43,7 +43,6 @@ const CreatePost = () => {
       navigate("/");
     }
     if (isError) {
-      console.log(error);
       notification.error({
         message:
           error.status === 500 ? "Something went wrong." : error.data.error,
@@ -51,7 +50,7 @@ const CreatePost = () => {
         placement: "bottomRight",
       });
     }
-  }, [isSuccess, isError, error, isLoading]);
+  }, [isSuccess, isError, error, isLoading, navigate]);
   return (
     <Style>
       <GoBack />

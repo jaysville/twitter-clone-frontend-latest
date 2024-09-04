@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { message, notification, Spin } from "antd";
+import { notification, Spin } from "antd";
 
 import { useEffect, useState } from "react";
 import {
@@ -31,7 +31,6 @@ const EditPost = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      console.log(data);
       setPost(data.content);
       setPostImages(data.images);
     }
@@ -42,7 +41,7 @@ const EditPost = () => {
         placement: "bottomRight",
       });
     }
-  }, [isSuccess, isError, error]);
+  }, [isSuccess, isError, error, data]);
 
   const handleEditPost = () => {
     if (
@@ -89,14 +88,20 @@ const EditPost = () => {
       navigate(`/post/${[postId]}`);
     }
     if (editPostIsError) {
-      console.log(editPostError);
       notification.error({
         message: editPostError.data.error,
         duration: 3,
         placement: "top",
       });
     }
-  }, [editPostIsSuccess, editPostIsError, editPostError, error]);
+  }, [
+    editPostIsSuccess,
+    editPostIsError,
+    editPostError,
+    error,
+    navigate,
+    postId,
+  ]);
 
   return (
     <Style>

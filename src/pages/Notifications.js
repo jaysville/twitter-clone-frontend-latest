@@ -5,8 +5,7 @@ import NotificationItem from "../components/UI/NotificationItem";
 import { useEffect } from "react";
 
 const Notifications = ({ notifications }) => {
-  const [viewNotifications, { isLoading, isSuccess, isError, error }] =
-    useViewNotificationsMutation();
+  const [viewNotifications] = useViewNotificationsMutation();
 
   useEffect(() => {
     const unviewedNotifs = notifications
@@ -16,7 +15,7 @@ const Notifications = ({ notifications }) => {
     if (unviewedNotifs.length > 0) {
       viewNotifications(unviewedNotifs);
     }
-  }, [notifications]);
+  }, [notifications, viewNotifications]);
 
   return (
     <Style>

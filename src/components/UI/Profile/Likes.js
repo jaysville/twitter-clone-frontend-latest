@@ -7,12 +7,11 @@ import { useFetchUserLikesQuery } from "../../../redux/api/postApi";
 const Likes = () => {
   const [userId] = useOutletContext();
 
-  const { data, isLoading, error, isError, isSuccess } =
+  const { data, isLoading, isError, isSuccess } =
     useFetchUserLikesQuery(userId);
 
   useEffect(() => {
     if (!isLoading && isError) {
-      console.log(error);
       notification.error({
         message: "Failed to fetch posts.",
         duration: 3,

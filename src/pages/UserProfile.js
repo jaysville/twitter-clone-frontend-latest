@@ -37,7 +37,7 @@ const UserProfile = () => {
     toggleFollowUser,
     {
       isSuccess: toggleFollowIsSuccess,
-      isError: toggleFollowIsError,
+
       error: toggleFollowError,
       isLoading: toggleFollowIsLoading,
     },
@@ -45,7 +45,6 @@ const UserProfile = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      console.log(user.following, activeUser);
       if (user.followers.includes(activeUser)) {
         setIsFollowing(true);
       } else {
@@ -64,10 +63,7 @@ const UserProfile = () => {
     if (toggleFollowIsSuccess) {
       setIsFollowing((prevState) => !prevState);
     }
-    if (toggleFollowIsError) {
-      console.log(toggleFollowError);
-    }
-  }, [toggleFollowIsSuccess, toggleFollowIsError, toggleFollowError]);
+  }, [toggleFollowIsSuccess, toggleFollowError]);
 
   useEffect(() => {
     setActiveLink(location.pathname);
@@ -97,7 +93,7 @@ const UserProfile = () => {
 
   return (
     <Style>
-      {isLoading && <p>Loadinggg</p>}
+      {isLoading && <p>Loading...</p>}
       {!isLoading && isError && <p>user not found</p>}
       {!isLoading && isSuccess && (
         <>

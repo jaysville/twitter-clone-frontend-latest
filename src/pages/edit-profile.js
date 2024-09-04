@@ -33,7 +33,7 @@ const EditProfile = () => {
     {
       isSuccess: editProfileSuccess,
       isLoading: editProfileIsLoading,
-      error: editProfileError,
+
       isError: editProfileIsError,
     },
   ] = useEditProfileMutation();
@@ -42,9 +42,6 @@ const EditProfile = () => {
     if (isSuccess) {
       setBio(user.bio);
       setDisplayName(user.displayName);
-    }
-    if (isError) {
-      console.log(error);
     }
   }, [isSuccess, error, user, isError]);
 
@@ -59,10 +56,10 @@ const EditProfile = () => {
     }
     if (editProfileIsError) {
       notification.error({
-        message: editProfileError.data.error,
+        message: "Something went wrong",
       });
     }
-  }, [editProfileIsError, editProfileSuccess]);
+  }, [editProfileIsError, editProfileSuccess, navigate, userId]);
 
   const handleEditProfile = () => {
     if (!selectedFile && displayName === user.displayName && bio === user.bio) {

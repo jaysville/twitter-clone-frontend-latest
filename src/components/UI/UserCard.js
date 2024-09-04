@@ -22,7 +22,7 @@ const UserCard = ({ user }) => {
     } else {
       setIsFollowing(false);
     }
-  }, [user]);
+  }, [user, activeUserId]);
 
   useEffect(() => {
     if (isSuccess) {

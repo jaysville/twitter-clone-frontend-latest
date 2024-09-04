@@ -19,7 +19,7 @@ import Reposts from "./components/UI/Profile/Reposts";
 import EditPost from "./pages/edit-post";
 import Recommended from "./components/Layout/Recommended";
 import EditProfile from "./pages/edit-profile";
-import { Modal, notification } from "antd";
+import { Modal } from "antd";
 import { logout } from "./redux/slices/authSlice";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
@@ -29,7 +29,6 @@ import { useFetchNotificationsQuery } from "./redux/api/userApi";
 
 function App() {
   const token = useSelector((state) => state.auth.token);
-  const [showSideNav, setShowSideNav] = useState(false);
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isMobileView, setIsMobileView] = useState(false);
@@ -37,6 +36,8 @@ function App() {
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
+
+  const { data, isSuccess, refetch } = useFetchNotificationsQuery();
 
   const dispatch = useDispatch();
 
@@ -55,7 +56,8 @@ function App() {
 
   useEffect(() => {
     setCurrentPath(location.pathname);
-  }, [location.pathname]);
+    refetch();
+  }, [location.pathname, refetch]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -73,9 +75,6 @@ function App() {
       window.removeEventListener("resize", handleResize);
     };
   }, [windowWidth, token]);
-
-  const { data, isLoading, isError, isSuccess, error } =
-    useFetchNotificationsQuery();
 
   useEffect(() => {
     if (isSuccess) {

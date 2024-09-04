@@ -52,7 +52,6 @@ const SignUp = () => {
       navigate("/");
     }
     if (isError) {
-      console.log();
       notification.error({
         message:
           error.status === 500 ? "Something went wrong." : error.data.error,
@@ -60,7 +59,7 @@ const SignUp = () => {
         placement: "bottomRight",
       });
     }
-  }, [data, error, isSuccess, isError, isLoading, navigate]);
+  }, [data, error, isSuccess, isError, isLoading, dispatch, navigate]);
   return (
     <Style>
       <h2>Create Account</h2>

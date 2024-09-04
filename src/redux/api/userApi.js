@@ -60,7 +60,7 @@ export const userApi = createApi({
       query: (unviewedNotifs) => ({
         url: "/notifications",
         method: "Put",
-        body: { unviewedNotifs },
+        body: unviewedNotifs,
       }),
       invalidatesTags: ["Notification"],
     }),

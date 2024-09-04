@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, timeout } from "../../redux/slices/authSlice";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -28,7 +28,7 @@ const RequireAuth = () => {
       navigate("/login");
       return;
     }
-  }, [navigate, token, dispatch, didTimeout]);
+  }, [navigate, token, dispatch, didTimeout, didLogout]);
 
   useEffect(() => {
     if (sessionExpirationTime) {

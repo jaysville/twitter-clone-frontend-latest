@@ -41,7 +41,6 @@ const Login = () => {
     });
 
   const handleClick = async () => {
-    console.log("submitted");
     await login({ email: values.email, password: values.password });
   };
 
@@ -58,7 +57,6 @@ const Login = () => {
       navigate("/");
     }
     if (isError) {
-      console.log(error);
       notification.error({
         message:
           error.status === 500 ? "Something went wrong." : error.data.error,

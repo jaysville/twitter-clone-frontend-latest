@@ -7,7 +7,7 @@ import { useOutletContext } from "react-router-dom";
 const Posts = () => {
   const [userId] = useOutletContext();
 
-  const { data, isLoading, error, isError, isSuccess } =
+  const { data, isLoading, isError, isSuccess } =
     useFetchUserPostsQuery(userId);
 
   useEffect(() => {

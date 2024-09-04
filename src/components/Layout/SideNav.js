@@ -68,17 +68,15 @@ const SideNav = (props) => {
         <SideBarList>
           {LinkData.map(({ title, onClick, link, icon }, i) => {
             return (
-              <a href={link}>
-                <NavLink
-                  key={i}
-                  mobileView={props.isMobileView}
-                  onClick={onClick}
-                  isActive={currentPath === link}
-                >
-                  {!props.isMobileView && <Title>{title}</Title>}
-                  <Icon>{icon}</Icon>
-                </NavLink>
-              </a>
+              <NavLink
+                key={i}
+                mobileView={props.isMobileView}
+                onClick={onClick}
+                isActive={currentPath === link}
+              >
+                {!props.isMobileView && <Title>{title}</Title>}
+                <Icon>{icon}</Icon>
+              </NavLink>
             );
           })}
         </SideBarList>

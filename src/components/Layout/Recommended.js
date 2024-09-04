@@ -1,25 +1,15 @@
-import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { useFetchRecommendedUsersQuery } from "../../redux/api/userApi";
-import { useEffect } from "react";
 import UserCard from "../UI/UserCard";
 
 const Recommended = (props) => {
-  const activeUserId = useSelector((state) => state.auth.user);
-
   const {
     data: users,
     isLoading,
     isError,
-    error,
+
     isSuccess,
   } = useFetchRecommendedUsersQuery();
-
-  useEffect(() => {
-    if (isError) {
-      console.log(error);
-    }
-  }, [error, isError]);
 
   return (
     <Style>
@@ -30,7 +20,7 @@ const Recommended = (props) => {
       ) : (
         isSuccess && (
           <>
-            {/* <h3>Accounts to follow</h3> */}
+            <h3>Accounts to follow</h3>
             <ul>
               {users.map((user, i) => {
                 return (
@@ -51,6 +41,7 @@ export default Recommended;
 
 const Style = styled.div`
   display: flex;
+  position: relative;
   background-color: #0b0201;
   border-left: 1px solid aliceblue;
   padding: 10px 0;
@@ -61,8 +52,16 @@ const Style = styled.div`
   position: fixed;
   right: 0;
   top: 0;
+  ul {
+    margin-top: 80px;
+  }
 
   @media (max-width: 1000px) {
     display: none;
+  }
+  h3 {
+    position: absolute;
+    top: 30px;
+    right: 100px;
   }
 `;

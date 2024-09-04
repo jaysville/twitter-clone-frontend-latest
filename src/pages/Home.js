@@ -12,11 +12,11 @@ import { PostPageBtn } from "../components/UI/Buttons";
 const Home = () => {
   const [posts, setPosts] = useState([]);
   const [feed, setFeed] = useState("");
-  const { data, isLoading, error, isError, isSuccess } = useGetAllPostsQuery();
+
+  const { data, isLoading, isError, isSuccess } = useGetAllPostsQuery();
   const {
     data: followingPosts,
-    isLoading: followingPostsIsLoading,
-    isError: followingPostsIsError,
+
     isSuccess: followingPostsIsSuccess,
   } = useFetchFollowingPostsQuery();
   const user = useSelector((state) => state.auth.user);
@@ -32,7 +32,7 @@ const Home = () => {
         placement: "bottomRight",
       });
     }
-  }, [data, isSuccess, user, isError]);
+  }, [data, isSuccess, user, isError, followingPosts]);
 
   useEffect(() => {
     if (feed === "following") {
@@ -42,7 +42,7 @@ const Home = () => {
         setPosts(data?.posts);
       }
     }
-  }, [feed, followingPostsIsSuccess]);
+  }, [feed, followingPostsIsSuccess, data?.posts, followingPosts]);
 
   return (
     <Style>

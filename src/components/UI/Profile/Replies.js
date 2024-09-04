@@ -7,12 +7,11 @@ import { useFetchUserRepliesQuery } from "../../../redux/api/postApi";
 const Replies = () => {
   const [userId] = useOutletContext();
 
-  const { data, isLoading, error, isError, isSuccess } =
+  const { data, isLoading, isError, isSuccess } =
     useFetchUserRepliesQuery(userId);
 
   useEffect(() => {
     if (!isLoading && isError) {
-      console.log(error.status);
       notification.error({
         message: "Failed to fetch posts.",
         duration: 3,

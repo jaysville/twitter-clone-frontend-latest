@@ -1,7 +1,7 @@
 import PostList from "./PostList";
 import { useGetCommentsQuery } from "../../redux/api/postApi";
 import { useEffect } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { notification } from "antd";
 
 const Comments = () => {
