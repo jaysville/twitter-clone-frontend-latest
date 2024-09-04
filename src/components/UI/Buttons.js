@@ -35,7 +35,7 @@ export const PostPageBtn = (props) => {
     position: fixed;
     transform: scale(1.5);
     right: 20px;
-    bottom: 20px;
+    bottom: 100px;
     z-index: 2000000000000000;
 
     cursor: pointer;

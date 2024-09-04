@@ -7,6 +7,8 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Logout } from "@mui/icons-material";
 import { useState } from "react";
 
+export let navLinkData;
+
 const SideNav = (props) => {
   const activeUserId = useSelector((state) => state.auth.user);
 
@@ -35,7 +37,7 @@ const SideNav = (props) => {
       title: "Alert",
       link: "/notifications",
       icon: (
-        <Badge>
+        <Badge mobileView={props.isMobileView}>
           {unviewedNotifs.length > 0 && <span>{unviewedNotifs.length}</span>}
           <NotificationsIcon />
         </Badge>
@@ -62,6 +64,8 @@ const SideNav = (props) => {
       },
     },
   ];
+
+  navLinkData = LinkData;
   return (
     <>
       <Style mobileView={props.isMobileView}>
@@ -74,7 +78,7 @@ const SideNav = (props) => {
                 onClick={onClick}
                 isActive={currentPath === link}
               >
-                {!props.isMobileView && <Title>{title}</Title>}
+                <Title>{title}</Title>
                 <Icon>{icon}</Icon>
               </NavLink>
             );
@@ -91,9 +95,9 @@ const Style = styled.div`
   background-color: #0b0201;
   border-right: 1px solid aliceblue;
   padding: 10px 0;
-  width: ${(props) => (props.mobileView ? "40px" : "150px")};
+  width: 150px;
   height: 100vh;
-
+  display: ${(props) => props.mobileView && "none"};
   position: fixed;
   left: 0;
   top: 0;
@@ -156,19 +160,21 @@ const Title = styled.div`
 `;
 
 const Badge = styled.div`
-  position: relative;
-
   span {
     position: absolute;
     width: 35px;
-    top: -10px;
-    right: 0;
-    border-radius: 10px;
-    transform: scale(0.7);
+    height: 35px;
+    top: -4px;
+    right: 13px;
+    border-radius: 35px;
+    display: grid;
+    place-items: center;
+    transform: scale(0.5);
     background-color: #1976d2;
     @media (max-width: 750px) {
-      transform: scale(0.5);
-      right: -6px;
+      transform: scale(0.6);
+      top: 0;
+      right: 55px;
     }
   }
 `;

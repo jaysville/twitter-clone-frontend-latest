@@ -22,9 +22,14 @@ const Home = () => {
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && feed === "") {
       setPosts(data?.posts);
+    } else if (followingPostsIsSuccess && feed === "following") {
+      setPosts(followingPosts);
+    } else {
+      setFeed("");
     }
+
     if (isError) {
       notification.error({
         message: "Failed to fetch posts.",
@@ -32,22 +37,14 @@ const Home = () => {
         placement: "bottomRight",
       });
     }
-  }, [data, isSuccess, user, isError, followingPosts]);
-
-  useEffect(() => {
-    if (feed === "following" && !followingPostsIsLoading) {
-      if (followingPostsIsSuccess) {
-        setPosts(followingPosts);
-      } else {
-        setPosts(data?.posts);
-      }
-    }
   }, [
-    feed,
-    followingPostsIsSuccess,
-    data?.posts,
+    data,
+    isSuccess,
+    user,
+    isError,
     followingPosts,
-    followingPostsIsLoading,
+    followingPostsIsSuccess,
+    feed,
   ]);
 
   return (
@@ -72,9 +69,13 @@ const Home = () => {
       </Nav>
       <hr />
       <div>
-        {isLoading && <p>Loading....</p>}
-        {!isLoading && isSuccess && <PostList posts={posts} />}
-        {!isLoading && isError && <p>Something went wrong</p>}
+        {(isLoading || followingPostsIsLoading) && <p>Loading....</p>}
+        {(!isLoading || !followingPostsIsLoading) && isSuccess && (
+          <PostList posts={posts} />
+        )}
+        {(!isLoading || !followingPostsIsLoading) && isError && (
+          <p>Something went wrong</p>
+        )}
         <PostPageBtn />
       </div>
     </Style>

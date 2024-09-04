@@ -30,7 +30,8 @@ const Post = (props) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleOk = async () => {
+  const handleOk = async (e) => {
+    e.stopPropagation();
     setIsModalOpen(false);
 
     await deletePost(post._id);

@@ -5,7 +5,7 @@ import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/404";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
-import SideNav from "./components/Layout/SideNav";
+import SideNav, { navLinkData } from "./components/Layout/SideNav";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import RequireAuth from "./components/Layout/RequireAuth";
@@ -24,6 +24,8 @@ import { logout } from "./redux/slices/authSlice";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Notifications from "./pages/Notifications";
 import { useFetchNotificationsQuery } from "./redux/api/userApi";
 
@@ -81,6 +83,16 @@ function App() {
       setNotifications(data?.userNotifications);
     }
   }, [isSuccess, data]);
+
+  const [value, setValue] = useState("Home");
+
+  useEffect(() => {
+    setValue(0);
+  }, []);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   return (
     <div className="App">
@@ -141,6 +153,27 @@ function App() {
         </Routes>
         {token && currentPath !== "/edit-profile" && <Recommended />}
       </Container>
+      {isMobileView && token && (
+        <Box>
+          <BottomNavigation
+            sx={{ backgroundColor: "black" }}
+            value={value}
+            onChange={handleChange}
+          >
+            {navLinkData.map((link, i) => {
+              return (
+                <BottomNavigationAction
+                  label={link.title}
+                  key={i}
+                  icon={link.icon}
+                  onClick={link.onClick}
+                  sx={{ color: "aliceblue" }}
+                />
+              );
+            })}
+          </BottomNavigation>
+        </Box>
+      )}
     </div>
   );
 }
@@ -148,8 +181,7 @@ function App() {
 export default App;
 
 const Container = styled.div`
-  padding: 80px 30px;
-  margin-left: ${(props) => props.token && "20px"};
+  padding: ${(props) => (props.isMobileView ? "20px 15px" : "60px 30px")};
   max-width: ${(props) =>
     props.token && props.currentPath !== "/edit-profile" && "600px"};
 
@@ -159,4 +191,12 @@ const Container = styled.div`
     margin-right: ${(props) =>
       props.currentPath !== "/edit-profile" && props.token && "80px"};
   }
+`;
+
+const Box = styled.div`
+  position: fixed;
+  top: 91%;
+
+  left: 0;
+  width: 100%;
 `;
