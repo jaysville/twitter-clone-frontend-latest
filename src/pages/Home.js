@@ -16,7 +16,7 @@ const Home = () => {
   const { data, isLoading, isError, isSuccess } = useGetAllPostsQuery();
   const {
     data: followingPosts,
-
+    isLoading: followingPostsIsLoading,
     isSuccess: followingPostsIsSuccess,
   } = useFetchFollowingPostsQuery();
   const user = useSelector((state) => state.auth.user);
@@ -35,14 +35,20 @@ const Home = () => {
   }, [data, isSuccess, user, isError, followingPosts]);
 
   useEffect(() => {
-    if (feed === "following") {
+    if (feed === "following" && !followingPostsIsLoading) {
       if (followingPostsIsSuccess) {
         setPosts(followingPosts);
       } else {
         setPosts(data?.posts);
       }
     }
-  }, [feed, followingPostsIsSuccess, data?.posts, followingPosts]);
+  }, [
+    feed,
+    followingPostsIsSuccess,
+    data?.posts,
+    followingPosts,
+    followingPostsIsLoading,
+  ]);
 
   return (
     <Style>
