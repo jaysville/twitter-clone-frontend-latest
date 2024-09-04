@@ -57,6 +57,7 @@ const Login = () => {
       navigate("/");
     }
     if (isError) {
+      console.log(error);
       notification.error({
         message:
           error.status === 500 ? "Something went wrong." : error.data.error,
